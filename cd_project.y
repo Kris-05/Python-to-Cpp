@@ -1,53 +1,55 @@
-%{                                                                                                                                                                      
-        #include <stdio.h>                                                                                                                                              
-        #include <iostream>                                                                                                                                             
-        #include <string>                                                                                                                                               
-        #include <vector>                                                                                                                                               
-        #include <map>                                                                                                                                                  
-        #include "y.tab.h"                                                                                                                                              
-        using namespace std;                                                                                                                                            
-        extern FILE *yyin;                                                                                                                                  
-        extern int yylex();                                                                                                                        
-        void yyerror(string s);                                                                                                                                         
-        int numOfTabs=0;                                                                                                                                                
-        int linenum=1;                                                                                                              
+%{
+  #include <stdio.h>
+  #include <iostream>
+  #include <string>
+  #include <vector>
+  #include <map>
+  #include "y.tab.h"
+  using namespace std;
+  extern FILE *yyin;
+  extern int yylex();
+  void yyerror(string s);
+  int numOfTabs=0;
+  int linenum=1;
 
-        #define INT_TYPE 1;                                                                                                                                             
-        #define FLOAT_TYPE 2;                                                                                                                                           
-        #define STRING_TYPE 3;                                                                                                                                          
-        vector<bool> ifScopeVector;                                                                                                                                     
-        map<string, int> typeMap;                                                                                                                                       
+  #define INT_TYPE 1;
+  #define FLOAT_TYPE 2;
+  #define STRING_TYPE 3;
+  vector<bool> ifScopeVector;
+  map<string, int> typeMap;
 
-        string cppFile = "#include<iostream>\nusing namespace std;\n#include<string.h>\nint main()\n{\n";                                                               
-        string tmp = "";                                                                                                                                                
-        string assignment = "";                                                                                                                                         
-        string element;                                                                                                                                                 
-        string intVars = "";                                                                                                                                            
-        string floatVars = "";                                                                                                                                          
-        string stringVars = "";                                                                                                                                         
-        string stringSign;                                                                                                                                              
-        string fvar;                                                                                                                                                    
-        string fstringSign;                                                                                                                                             
-        string ftmp1;                                                                                                                                                   
-        string ftmp2;                                                                                                                                                   
-        string ftmp3;                                                                                                                                                   
-        string varr[100];                                                                                                                                               
-        string darr[100];                                                                                                                                               
-        string fname;                                                                                                                                                   
-        string rt;                                                                                                                                                      
-        int iarr = 0;                                                                                                                                                   
-        int types[2];                                                                                                                                               
-        int cc = 0;                                                                                                                                                     
-        int requiredTabNum = 0;                                                                                                                                     
-        bool flag = false;                                                                                                                                              
-        bool isPlus;                                                                                                                                                    
-        char *variable;                                                                                                                                                 
+  string cppFile = "#include<iostream>\nusing namespace std;\n#include<string.h>\nint main()\n{\n";
+  string tmp = "";
+  string assignment = "";
+  string element;
+  string intVars = "";
+  string floatVars = "";
+  string stringVars = "";
+  string stringSign;
+  string fvar;
+  string fstringSign;
+  string ftmp1;
+  string ftmp2;
+  string ftmp3;
+  string varr[100];
+  string darr[100];
+  string fname;
+  string rt;
+  int iarr = 0;
+  int types[2];
+  int cc = 0;
+  int requiredTabNum = 0;
+  bool flag = false;
+  bool isPlus;
+  char *variable;
+%}
 
-%}                                                                                                                                                                      
-%union {                                                                                                                                                                       
-  char *str;                                                                                                                                                   
-}                                                                                                                                                                       
-%token <str> VAR STRING CHAR PRINT DEF FN DATYPE RETURN ARR PLUS MINUS MULT DIV MOD INT FLOAT EQUAL IF ELIF ELSE COMPARISON NWLN COLON TAB FOR IN RANGE COMMA WHILE MATCH CASE DEFAULT AND OR NOT BREAK CONTINUE                                                                                                                                
+%union {
+  char *str;
+}
+
+%token <str> VAR STRING CHAR PRINT DEF FN DATYPE RETURN ARR PLUS MINUS MULT DIV MOD INT FLOAT EQUAL IF ELIF ELSE COMPARISON NWLN COLON TAB FOR IN RANGE COMMA WHILE MATCH CASE DEFAULT AND OR NOT BREAK CONTINUE
+
 %%
         program:
                 statements
@@ -652,141 +654,138 @@
                 |                                                                                                                                                       
                 MOD {isPlus = false; assignment += " %";}                                                                                                               
                 ;                                                                                                                                                       
-%%                                                                                                                                                                      
-void primitiveTypeDetect(int type, string element) {                                                                                                                    
-        assignment += element;                                                                                                                                          
-        types[1] = type;                                                                                                                                                
-}                                                                                                                                                                       
-void tabCheck(){                                                                                                                                                        
-        if ((flag && numOfTabs != requiredTabNum) || numOfTabs > requiredTabNum) {                                                                                      
-                if(!ifScopeVector.empty()){                                                                                                                             
-                        cout << "error in line " << linenum << ": at least one line should be inside if/elif/else block" << endl;                                       
-                        exit(1);                                                                                                                                        
-                }else{                                                                                                                                                  
-                        cout << "tab inconsistency in line " << linenum << endl;                                                                                        
-                        exit(1);                                                                                                                                        
-                }                                                                                                                                                       
-        }                                                                                                                                                               
-}                                                                                                                                                                       
-void handleConditionStatements(string conditionWord){                                                                                                                   
-        for (int i = numOfTabs + 1; i <= requiredTabNum; i++) {                                                                                                         
-                for (int j = 0; j < i; j++)                                                                                                                             
-                        tmp += "\t";                                                                                                                                    
-                if (conditionWord != "switch") tmp += "}\n";                                                                                                            
-        }                                                                                                                                                               
-        for (int i = 0; i <= numOfTabs; i++) tmp += "\t";                                                                                                               
-        if(conditionWord != "else") conditionWord = conditionWord + " (";                                                                                               
-        else if(conditionWord == "else") conditionWord += "\n";                                                                                                         
-        tmp += conditionWord;                                                                                                                                           
-}                                                                                                                                                                       
-void handleFor(string conditionWord){                                                                                                                                   
-        for (int i = numOfTabs + 1; i <= requiredTabNum; i++) {                                                                                                         
-                for (int j = 0; j < i; j++)                                                                                                                             
-                        tmp += "\t";                                                                                                                                    
-                tmp += "}\n";                                                                                                                                           
-        }                                                                                                                                                               
-        for (int i = 0; i <= numOfTabs; i++) tmp += "\t";                                                                                                               
-        if(conditionWord != "else") conditionWord = conditionWord + " (";                                                                                               
-        tmp += conditionWord;                                                                                                                                           
-}                                                                                                                                                                       
-void handlePrint(){                                                                                                                                                     
-        tabCheck();                                                                                                                                                     
+%%     
 
-        if (numOfTabs < requiredTabNum) {                                                                                                                               
-                while (ifScopeVector.size() != numOfTabs)                                                                                                               
-                        ifScopeVector.pop_back();                                                                                                                       
+void primitiveTypeDetect(int type, string element) {
+        assignment += element;
+        types[1] = type;
+}
+void tabCheck(){
+        if ((flag && numOfTabs != requiredTabNum) || numOfTabs > requiredTabNum) {
+                if(!ifScopeVector.empty()){
+                        cout << "error in line " << linenum << ": at least one line should be inside if/elif/else block" << endl;
+                        exit(1);
+                }else{
+                        cout << "tab inconsistency in line " << linenum << endl;
+                        exit(1);
+                }
+        }
+}
+void handleConditionStatements(string conditionWord){
+        for (int i = numOfTabs + 1; i <= requiredTabNum; i++) {
+                for (int j = 0; j < i; j++)
+                        tmp += "\t";
+                if (conditionWord != "switch") tmp += "}\n";
+        }
+        for (int i = 0; i <= numOfTabs; i++) tmp += "\t";
+        if(conditionWord != "else") conditionWord = conditionWord + " (";
+        else if(conditionWord == "else") conditionWord += "\n";
+        tmp += conditionWord;
+}
+void handleFor(string conditionWord){
+        for (int i = numOfTabs + 1; i <= requiredTabNum; i++) {
+                for (int j = 0; j < i; j++)
+                        tmp += "\t";
+                tmp += "}\n";
+        }
+        for (int i = 0; i <= numOfTabs; i++) tmp += "\t";
+        if(conditionWord != "else") conditionWord = conditionWord + " (";
+        tmp += conditionWord;
+}
+void handlePrint(){
+        tabCheck();
+        if (numOfTabs < requiredTabNum) {
+                while (ifScopeVector.size() != numOfTabs)
+                        ifScopeVector.pop_back();
+                requiredTabNum = numOfTabs;
+        }
 
-                requiredTabNum = numOfTabs;                                                                                                                             
+        flag = false;
+        numOfTabs = 0;
+}
+void handleTypeAssignment(const string& element, const string& suffix, string& vars, int type) {
+    string varName = element + suffix;
 
-        }                                                                                                                                                               
-
-        flag = false;                                                                                                                                                   
-        numOfTabs = 0;                                                                                                                                                  
-}                                                                                                                                                                       
-void handleTypeAssignment(const string& element, const string& suffix, string& vars, int type) {                                                                        
-    string varName = element + suffix;                                                                                                                                  
-
-        bool isThere = false;                                                                                                                                           
-        int len = 0;                                                                                                                                                    
-        for (int i = 0; i < vars.length(); ++i) {                                                                                                                       
+        bool isThere = false;
+        int len = 0;
+        for (int i = 0; i < vars.length(); ++i) {
                 if (vars[i] == varName[len]) {
-                        ++len;                                                                                                                                          
-                        if (len == varName.length() && (i + 1 == vars.length() || vars[i + 1] == ',')) {                                                                
-                                isThere = true;                                                                                                                         
-                        }                                                                                                                                               
-                } else if (vars[i] == ',') {                                                                                                                            
-                        len = 0;                                                                                                                                        
-                }                                                                                                                                                       
-        }                                                                                                                                                               
-        if( len == varName.length() ) {                                                                                                                                 
-                isThere = true;                                                                                                                                         
-        } ;                                                                                                                                                             
-    if (!isThere) {                                                                                                                                                     
-        if (vars.length())                                                                                                                                              
-            vars += ",";                                                                                                                                                
-        vars += varName;                                                                                                                                                
-    }                                                                                                                                                                   
-    tmp += varName + " =";                                                                                                                                              
-    typeMap[element] = type;                                                                                                                                            
-}                                                                                                                                                                       
-void handleAssignment(){                                                                                                                                                
-        string element(variable);                                                                                                                                       
-        tabCheck();                                                                                                                                                     
+                        ++len;
+                        if (len == varName.length() && (i + 1 == vars.length() || vars[i + 1] == ',')) {
+                                isThere = true;
+                        }
+                } else if (vars[i] == ',') {
+                        len = 0;
+                }
+        }
+        if( len == varName.length() ) {
+                isThere = true;
+        } ;
+    if (!isThere) {
+        if (vars.length())
+            vars += ",";
+        vars += varName;
+    }
+    tmp += varName + " =";
+    typeMap[element] = type;
+}
+void handleAssignment(){
+        string element(variable);
+        tabCheck();
 
-        if (numOfTabs < requiredTabNum) {                                                                                                                               
-                while (ifScopeVector.size() != numOfTabs)                                                                                                               
-                        ifScopeVector.pop_back();                                                                                                                       
-                requiredTabNum = numOfTabs;                                                                                                                             
-        }                                                                                                                                                               
-        flag = false;                                                                                                                                                   
-        numOfTabs = 0;                                                                                                                                                  
-        switch(types[0]){                                                                                                                                               
-                case 1:                                                                                                                                                 
-                        handleTypeAssignment(element, "_int", intVars, 1);                                                                                              
-                        break;                                                                                                                                          
-                case 2:                                                                                                                                                 
-                        handleTypeAssignment(element, "_flt", floatVars, 2);                                                                                            
-                        break;                                                                                                                                          
-                case 3:                                                                                                                                                 
-                        if (stringSign != "") {                                                                                                                         
-                        cout << "type inconsistency in line " << linenum << endl;                                                                                       
-                        exit(1);                                                                                                                                        
-                        }                                                                                                                                               
-                        handleTypeAssignment(element, "_str", stringVars, 3);                                                                                           
-                        break;                                                                                                                                          
-        }                                                                                                                                                               
-        tmp += assignment + ";\n";                                                                                                                                      
-}                                                                                                                                                                       
-void appendVariableDeclaration(const string& type, const string& vars) {                                                                                                
-    if (vars.length())                                                                                                                                                  
-        cppFile += "\t" + type + " " + vars + ";\n";                                                                                                                    
-}                                                                                                                                                                       
-void appendTabsAndClosingBrace(int tabs) {                                                                                                                              
-    for (int j = 0; j < tabs; ++j)                                                                                                                                      
-        cppFile += "\t";                                                                                                                                                
-    cppFile += "}\n";                                                                                                                                                   
-}                                                                                                                                                                       
-void writeToCpp() {                                                                                                                                                     
-    appendVariableDeclaration("int", intVars);                                                                                                                          
-    appendVariableDeclaration("float", floatVars);                                                                                                                      
-    appendVariableDeclaration("string", stringVars);                                                                                                                    
-    cppFile += "\n" + tmp;                                                                                                                                              
-    for (int i = requiredTabNum; i >= numOfTabs + 1; --i) {                                                                                                             
-        appendTabsAndClosingBrace(i);                                                                                                                                   
-
-    }                                                                                                                                                                   
-    if(!cc) cppFile += "\n}";                                                                                                                                           
-}                                                                                                                                                                       
-void yyerror(string s){                                                                                                                                                 
-        cerr<<"Error at line: "<<linenum<<endl;                                                                                                                         
-        exit(1);                                                                                                                                                        
-}                                                                                                                                                                       
-int yywrap(){                                                                                                                                                       
-        return 1;                                                                                                                                                       
-}                                                                                                                                                                       
-int main(int argc, char *argv[]) {                                                                                                                                                                       
-    /* Call the lexer, then quit. */                                                                                                                                    
-    yyin=fopen(argv[1],"r");
+        if (numOfTabs < requiredTabNum) {
+                while (ifScopeVector.size() != numOfTabs)
+                        ifScopeVector.pop_back();
+                requiredTabNum = numOfTabs;
+        }
+        flag = false;
+        numOfTabs = 0;
+        switch(types[0]){
+                case 1:
+                        handleTypeAssignment(element, "_int", intVars, 1);
+                        break;
+                case 2:
+                        handleTypeAssignment(element, "_flt", floatVars, 2);
+                        break;
+                case 3:
+                        if (stringSign != "") {
+                        cout << "type inconsistency in line " << linenum << endl;
+                        exit(1);
+                        }
+                        handleTypeAssignment(element, "_str", stringVars, 3);
+                        break;
+        }
+        tmp += assignment + ";\n";
+}
+void appendVariableDeclaration(const string& type, const string& vars) {
+    if (vars.length())
+        cppFile += "\t" + type + " " + vars + ";\n";
+}
+void appendTabsAndClosingBrace(int tabs) {
+    for (int j = 0; j < tabs; ++j)
+        cppFile += "\t";
+    cppFile += "}\n";
+}
+void writeToCpp() {
+    appendVariableDeclaration("int", intVars);
+    appendVariableDeclaration("float", floatVars);
+    appendVariableDeclaration("string", stringVars);
+    cppFile += "\n" + tmp;
+    for (int i = requiredTabNum; i >= numOfTabs + 1; --i) {
+        appendTabsAndClosingBrace(i);
+    }
+    if(!cc) cppFile += "\n}";
+}
+void yyerror(string s){
+        cerr<<"Error at line: "<<linenum<<endl;
+        exit(1);
+}
+int yywrap(){
+        return 1;
+}
+int main(int argc, char *argv[]) {
+    /* Call the lexer, then quit. */
+    yyin=fopen(argv[1],"r")
     yyparse();
     fclose(yyin);
         writeToCpp();
