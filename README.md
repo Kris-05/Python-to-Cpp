@@ -9,3 +9,8 @@ lex cd_project.l
 vim cd_project.y
 yacc -d cd_project.y
 ```
+## To Run
+```
+g++ -o <name> lex.yy.c y.tab.c
+./<name> <input_file>.py
+```
