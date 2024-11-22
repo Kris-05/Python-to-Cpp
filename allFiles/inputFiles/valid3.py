@@ -1,4 +1,4 @@
-# nested if-else
+# nested if-else block
 
 a = 10                                                                                                                                                                  
 b = 20                                                                                                                                                                  
