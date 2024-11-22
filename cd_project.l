@@ -4,10 +4,8 @@
   #include <string.h>
   #include "y.tab.h"
 %}
-
 LETTER [a-zA-Z]
 DIGIT  [0-9]
-
 %%
 
 "\+" return PLUS;
@@ -17,7 +15,8 @@ DIGIT  [0-9]
 "\%" return MOD;
 "=" return EQUAL;
 ":" return COLON;
-"->" { return ARR; }
+"->" return ARR;
+"," return COMMA;
 
 "if " return IF;
 "elif " return ELIF;
@@ -25,7 +24,6 @@ DIGIT  [0-9]
 "for " return FOR;
 "in" return IN;
 "range" return RANGE;
-"," return COMMA;
 "while " return WHILE;
 "match" return MATCH;
 "case" return CASE;
@@ -68,3 +66,5 @@ DIGIT  [0-9]
 \t|"    " return TAB;
 \n return NWLN;
 
+.
+%%
