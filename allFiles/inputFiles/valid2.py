@@ -1,3 +1,5 @@
+# operations and if-elif-else block
+
 a = 5                                                                                                                                                                   
 b = a % 2                                                                                                                                                               
 if a == 0:                                                                                                                                                              
