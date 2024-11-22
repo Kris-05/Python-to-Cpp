@@ -1,10 +1,8 @@
-# nested-while construct
+# while-loop construct
 
-a = 5                                                                                                                                                                   
-b = 0                                                                                                                                                                   
-while a > 0:                                                                                                                                                            
-    print(a, )                                                                                                                                                          
-    while b < 5:                                                                                                                                                        
-        print(b, )                                                                                                                                                      
-        b = b+1                                                                                                                                                         
-    a = a-1
+a = 0                                                                                                                                                                   
+b = 3                                                                                                                                                                   
+while a < 10:                                                                                                                                                           
+    c = a*b                                                                                                                                                             
+    print(c, )                                                                                                                                                          
+    a = a+1  
