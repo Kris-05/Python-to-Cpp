@@ -24,10 +24,7 @@ Our "Python to C++ Code Converter" is designed for the translation of Python cod
 
 ## Demo
 
-<video width="600" controls>
-  <source src="allFiles/DEMO_PY_CPP.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Demo Video](allFiles/DEMO_PY_CPP.mp4)
 
 ## Implementation
 
