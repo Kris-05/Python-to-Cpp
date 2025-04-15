@@ -28,7 +28,7 @@ Our "Python to C++ Code Converter" is designed for the translation of Python cod
 
 ## Implementation
 
-Utilizing Lex and Yacc for lexical analysis and parsing, our converter tokenizes Python code and constructs a parse tree to ensure accurate syntax conversion into C++. Key differences in syntax, such as indentation in Python versus curly braces in C++, are handled with precision.
+Using Lex and Yacc for lexical analysis and parsing, our converter tokenizes Python code and constructs a parse tree to ensure accurate syntax conversion into C++. Key differences in syntax, such as indentation in Python versus curly braces in C++, are handled with precision.
 
 ### Create Lex file
 
