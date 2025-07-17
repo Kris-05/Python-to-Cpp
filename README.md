@@ -24,7 +24,7 @@ Our "Python to C++ Code Converter" is designed for the translation of Python cod
 
 ## Demo
 
-[[Demo Video]](https://drive.google.com/file/d/1im8iIbC9sXzruylLwX_nygQazFxKYBCG/view)
+[Demo Video](https://drive.google.com/file/d/1im8iIbC9sXzruylLwX_nygQazFxKYBCG/view)
 
 ## Implementation
 
